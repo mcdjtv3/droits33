@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Formes d'Exercice d'une Activité Commerciale</title>
+    <style>
+        body {
+            font-family: 'Mayan', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container, .summary {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image: url('images/back.jpg.webp');
+            background-size: cover;
+            background-position: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+        .choices {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 20%;
+        }
+        .choices li {
+            margin: 8px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #FF0000;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #CC0000;
+        }
+        .summary {
+            display: none;
+        }
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .summary li {
+            text-align: left;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .quiz-container, .summary {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .quiz-container, .summary {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .quiz-container, .summary {
+                max-width: 800px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="quiz-container">
+    <h2>QCM ENTRAINEMENT - Formes d'Exercice d'une Activité Commerciale</h2>
+    <div id="question-container">
+        <!-- Les questions seront affichées ici dynamiquement -->
+    </div>
+    <button id="next-button" onclick="nextQuestion()">Suivant</button>
+</div>
+
+<div class="summary" id="summary">
+    <h3>Récapitulatif</h3>
+    <ul id="summary-list">
+        <!-- Le récapitulatif des réponses sera affiché ici -->
+    </ul>
+    <div class="score" id="score"></div>
+    <button onclick="restartQuiz()">Recommencer</button>
+</div>
+
+<script>
+    const quizData = [
+        { question: "Quelle est la principale différence entre une activité commerciale individuelle et une société ?", choices: ["La taille de l'entreprise", "Le niveau de responsabilité personnelle de l'entrepreneur", "L'obligation de payer des taxes", "La nature des produits vendus"], correct: 1 },
+        { question: "Quels sont les principaux risques liés à l'activité commerciale individuelle ?", choices: ["Manque de liberté d'action", "Responsabilité illimitée sur le patrimoine personnel", "Aucune garantie de revenu", "Obligation de vendre des actions"], correct: 1 },
+        { question: "Exemple : Charles gère seul une boutique, mais craint pour son patrimoine familial. Quelle solution pourrait-il adopter pour limiter les risques ?", choices: ["Créer une société", "Continuer sans changement", "Obtenir un crédit bancaire", "Augmenter ses ventes"], correct: 0 },
+        { question: "Qu'est-ce qu'une société en termes juridiques ?", choices: ["Un individu seul qui exerce une activité", "Une entité créée par plusieurs personnes pour réaliser un objectif commun", "Une entreprise sans statut légal", "Un organisme gouvernemental"], correct: 1 },
+        { question: "Quels sont les types d'apports possibles dans une société ?", choices: ["Apport en compétences uniquement", "Apport en numéraire, apport en nature, apport en industrie", "Apport en biens personnels uniquement", "Apport en actions obligatoires"], correct: 1 },
+        { question: "Exemple : Joséphine crée une société avec Charles. Elle apporte des locaux, tandis que Charles apporte 20 000 euros. Ces apports sont-ils équivalents en droits ?", choices: ["Oui, tous les apports ont la même valeur", "Non, la valeur des apports doit être évaluée", "Oui, le montant importe peu", "Non, les apports non monétaires ne comptent pas"], correct: 1 },
+        { question: "À partir de quand une société acquiert-elle une personnalité morale ?", choices: ["Dès sa création", "Lorsqu'elle est immatriculée au Registre du Commerce et des Sociétés (RCS)", "Lorsqu'elle commence à produire", "Quand les associés signent un accord"], correct: 1 },
+        { question: "Pourquoi la personnalité morale est-elle importante pour une société ?", choices: ["Elle permet de protéger les associés des dettes personnelles", "Elle garantit un bénéfice annuel", "Elle permet de vendre des actions en bourse", "Elle supprime les taxes fiscales"], correct: 0 },
+        { question: "Que signifie le capital social d'une société ?", choices: ["Le montant que les associés ont investi dans le patrimoine social de la société", "La somme des bénéfices annuels", "Les coûts de fonctionnement de l'entreprise", "Le capital familial"], correct: 0 },
+        { question: "Exemple : Charles investit 10 000 euros dans une société avec d'autres associés. Que représente ce montant pour la société ?", choices: ["Un apport en nature", "Une partie du capital social", "Un dividende potentiel", "Une dette"], correct: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedAnswers = [];
+
+    function loadQuestion() {
+        const container = document.getElementById('question-container');
+        container.innerHTML = '';
+
+        const questionData = quizData[currentQuestionIndex];
+        const questionElem = document.createElement('div');
+        questionElem.className = 'question';
+        questionElem.textContent = questionData.question;
+
+        const choicesElem = document.createElement('ul');
+        choicesElem.className = 'choices';
+
+        questionData.choices.forEach((choice, index) => {
+            const choiceElem = document.createElement('li');
+            const choiceInput = document.createElement('input');
+            choiceInput.type = 'radio';
+            choiceInput.name = 'choice';
+            choiceInput.value = index;
+            choiceInput.id = `choice${index}`;
+            
+            const choiceLabel = document.createElement('label');
+            choiceLabel.htmlFor = `choice${index}`;
+            choiceLabel.textContent = choice;
+
+            choiceElem.appendChild(choiceInput);
+            choiceElem.appendChild(choiceLabel);
+            choicesElem.appendChild(choiceElem);
+        });
+
+        container.appendChild(questionElem);
+        container.appendChild(choicesElem);
+    }
+
+    function nextQuestion() {
+        const selectedChoice = document.querySelector('input[name="choice"]:checked');
+        if (!selectedChoice) {
+            alert("Veuillez sélectionner une réponse !");
+            return;
+        }
+
+        selectedAnswers.push(parseInt(selectedChoice.value));
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const summary = document.getElementById('summary');
+        summary.style.display = 'block';
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        let correctAnswers = 0;
+
+        quizData.forEach((q, index) => {
+            const summaryItem = document.createElement('li');
+            summaryItem.innerHTML = `
+                <strong>${q.question}</strong><br>
+                <div style="text-align: left; margin-left: 20%;">
+                    Votre réponse: ${q.choices[selectedAnswers[index]]} - 
+                    ${selectedAnswers[index] === q.correct ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}<br>
+                    Bonne réponse: ${q.choices[q.correct]}
+                </div>
+            `;
+            summaryList.appendChild(summaryItem);
+            if (selectedAnswers[index] === q.correct) {
+                correctAnswers++;
+            }
+        });
+
+        document.getElementById('score').textContent = `Score: ${correctAnswers} / ${quizData.length}`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        selectedAnswers = [];
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
